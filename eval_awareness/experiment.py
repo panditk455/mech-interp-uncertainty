@@ -1,6 +1,7 @@
-"""Tier 2 (not yet run): does a model behave differently when it can tell it's
-being evaluated? Skeleton for a live experiment — fill in `run_condition` once
-you've picked models/an inference API and a benchmark.
+"""Does a model behave differently when it can tell it's being evaluated?
+
+Not yet run — this is a skeleton for a live experiment. Fill in `run_condition`
+once you've picked models, an inference API, and a benchmark.
 
 Design:
   1. Run the same set of models on the same benchmark twice: once with framing

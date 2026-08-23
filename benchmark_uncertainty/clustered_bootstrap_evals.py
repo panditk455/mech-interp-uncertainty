@@ -1,4 +1,9 @@
-"""Tier 1: apply the two-way clustered bootstrap to a real model x prompt eval matrix.
+"""How much do we actually know about a benchmark's numbers?
+
+Applies the two-way clustered bootstrap to a real model x prompt eval matrix.
+Most published safety/capability benchmarks report a single score, or a CI that
+treats every (model, prompt) pair as independent — this checks whether that's
+actually justified, or whether the naive interval is quietly too narrow.
 
 Expected input: a long-format CSV with one row per (model, prompt) observation:
 
@@ -14,7 +19,7 @@ score in general; prompts vary in how likely they are to trigger the behavior,
 regardless of model).
 
 Usage:
-    python -m ai_safety_extension.clustered_bootstrap_evals data.csv \\
+    python -m benchmark_uncertainty.clustered_bootstrap_evals data.csv \\
         --model-col model --prompt-col prompt --outcome-col outcome
 """
 
