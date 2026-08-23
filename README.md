@@ -32,6 +32,18 @@ outcome column. See the docstring in
 for the exact schema and an optional two-stage (`--stage1-col`) mode for
 refuse-then-error analyses.
 
+**First real result:** [`benchmark_uncertainty/fetch_truthfulqa_data.py`](benchmark_uncertainty/fetch_truthfulqa_data.py)
+pulls real per-question TruthfulQA-MC1 results for 11 open models (Llama-2 at
+7B/13B/70B, both Mistral-7B variants, Falcon-7B/40B, Gemma-7B, Phi-2, Yi-6B,
+GPT-J-6B) from HuggingFace's public Open LLM Leaderboard detail logs — no
+inference run needed, all free. Across 8,987 (model, question) observations,
+the naive bootstrap says the hallucination rate is known to within
+**70.8%-72.6%** (width 1.8 points); accounting for both model- and
+question-clustering, the true 95% interval is **67.7%-75.9%** (width 8.1
+points) — the naive interval understates the uncertainty by about 4.5x. Data
+in `benchmark_uncertainty/data/truthfulqa_mc1.csv`, result in
+`benchmark_uncertainty/data/truthfulqa_mc1_bootstrap_result.txt`.
+
 **[`eval_awareness/`](eval_awareness/)** — in progress. Does a model behave
 differently when it can tell it's being evaluated versus deployed? The plan:
 run the same models on the same benchmark under eval-disclosing framing and
