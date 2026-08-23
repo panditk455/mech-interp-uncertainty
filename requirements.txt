@@ -2,3 +2,5 @@ numpy
 pandas
 huggingface_hub
 pyarrow
+datasets
+groq

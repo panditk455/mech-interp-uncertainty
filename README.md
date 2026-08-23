@@ -44,14 +44,21 @@ points) — the naive interval understates the uncertainty by about 4.5x. Data
 in `benchmark_uncertainty/data/truthfulqa_mc1.csv`, result in
 `benchmark_uncertainty/data/truthfulqa_mc1_bootstrap_result.txt`.
 
-**[`eval_awareness/`](eval_awareness/)** — in progress. Does a model behave
-differently when it can tell it's being evaluated versus deployed? The plan:
-run the same models on the same benchmark under eval-disclosing framing and
-under ordinary-use framing, then use the clustered bootstrap to check whether
-abstention/error rates actually shift, with model and prompt as the two
-clustering factors. Connects directly to sandbagging and alignment-faking
-findings. `experiment.py` has the design and a skeleton to fill in once models
-and a benchmark are picked.
+**[`eval_awareness/`](eval_awareness/)** — implemented, not yet run. Does a
+model behave differently when it can tell it's being evaluated versus
+deployed? `experiment.py` asks each of Groq's current models (`openai/gpt-oss-20b`,
+`openai/gpt-oss-120b`, `qwen/qwen3.6-27b` — check
+[console.groq.com/docs/models](https://console.groq.com/docs/models), their
+catalog changes) the same TruthfulQA multiple-choice question twice — once
+under an eval-disclosing system prompt, once under an ordinary-deployment one
+— then compares abstention and error rates across conditions with the
+clustered bootstrap (model x question). Connects directly to sandbagging and
+alignment-faking findings. Needs a free API key from console.groq.com set as
+`GROQ_API_KEY`, then:
+
+```bash
+python -m eval_awareness.experiment --n-questions 60
+```
 
 **[`probe_uncertainty/`](probe_uncertainty/)** — early-stage, and the one I'm
 most excited about. Interpretability papers train a probe on model
