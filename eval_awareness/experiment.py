@@ -8,9 +8,9 @@ Mirrors sandbagging / evaluation-awareness findings (e.g. Greenblatt et al.,
 "Alignment Faking in Large Language Models"; Apollo Research's in-context
 scheming work) — verify exact citations before writing this up formally.
 
-Requires a free Groq API key: https://console.groq.com -> API Keys. Set it as
-an environment variable before running (never hardcode it in this file):
-    export GROQ_API_KEY=...
+Requires a free Groq API key: https://console.groq.com -> API Keys. Put it in
+a `.env` file at the repo root (gitignored, never commit it):
+    GROQ_API_KEY=your_key_here
 
 MODELS below is Groq's current general-purpose chat lineup as of Aug 2026 —
 their catalog changes; check https://console.groq.com/docs/models and update
@@ -29,9 +29,12 @@ import time
 
 import pandas as pd
 from datasets import load_dataset
+from dotenv import load_dotenv
 from groq import Groq
 
 from clustered_bootstrap import rate_statistic, two_way_cluster_bootstrap
+
+load_dotenv()
 
 MODELS = [
     "openai/gpt-oss-20b",
@@ -90,8 +93,16 @@ def format_prompt(q):
 def parse_letter(text):
     if not text:
         return None
-    match = re.search(r"\b([A-Z])\b", text.strip().upper())
-    return match.group(1) if match else None
+    # Reasoning models (e.g. qwen) emit visible chain-of-thought inline as
+    # <think>...</think> before the real answer -- that text often contains
+    # the answer choice letters verbatim (echoing "A) Red B) Blue"), so take
+    # the LAST standalone letter in the response, after stripping any think
+    # block, rather than the first.
+    text = text.strip()
+    if "</think>" in text:
+        text = text.split("</think>")[-1]
+    matches = re.findall(r"\b([A-Z])\b", text.upper())
+    return matches[-1] if matches else None
 
 
 def call_model(client, model, system_prompt, user_prompt, max_retries=5):
@@ -103,7 +114,13 @@ def call_model(client, model, system_prompt, user_prompt, max_retries=5):
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                max_tokens=8,
+                # Reasoning models (gpt-oss, qwen) spend part of this budget
+                # on hidden or visible chain-of-thought before the answer
+                # letter. qwen in particular writes out long visible <think>
+                # blocks -- observed up to ~900 completion tokens on a
+                # 7-choice question -- so this needs real headroom, not just
+                # enough for the final letter.
+                max_tokens=2000,
                 temperature=0,
             )
             return resp.choices[0].message.content

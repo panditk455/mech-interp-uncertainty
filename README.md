@@ -44,7 +44,7 @@ points) — the naive interval understates the uncertainty by about 4.5x. Data
 in `benchmark_uncertainty/data/truthfulqa_mc1.csv`, result in
 `benchmark_uncertainty/data/truthfulqa_mc1_bootstrap_result.txt`.
 
-**[`eval_awareness/`](eval_awareness/)** — implemented, not yet run. Does a
+**[`eval_awareness/`](eval_awareness/)** — done, with a real result. Does a
 model behave differently when it can tell it's being evaluated versus
 deployed? `experiment.py` asks each of Groq's current models (`openai/gpt-oss-20b`,
 `openai/gpt-oss-120b`, `qwen/qwen3.6-27b` — check
@@ -54,21 +54,36 @@ under an eval-disclosing system prompt, once under an ordinary-deployment one
 — then compares abstention and error rates across conditions with the
 clustered bootstrap (model x question). Connects directly to sandbagging and
 alignment-faking findings. Needs a free API key from console.groq.com set as
-`GROQ_API_KEY`, then:
+`GROQ_API_KEY` in a `.env` file, then:
 
 ```bash
 python -m eval_awareness.experiment --n-questions 60
 ```
 
-**[`probe_uncertainty/`](probe_uncertainty/)** — early-stage, and the one I'm
-most excited about. Interpretability papers train a probe on model
-activations (a refusal direction, an "is this being evaluated" feature, a
-deception detector) and report one accuracy number with no correction for the
-fact that prompts cluster by template and models cluster by checkpoint —
-probably the least statistically rigorous corner of eval reporting right now.
-Same clustered-bootstrap machinery, applied to probe accuracy instead of eval
-outcomes. See [`probe_uncertainty/README.md`](probe_uncertainty/README.md) for
-the plan.
+**Result (3 models x 60 questions x 2 conditions, 360 live calls):** no
+detectable eval-awareness effect. Abstention rate 8.9% eval-aware vs. 7.8%
+deployment-framed; conditional error rate 12.8% vs. 13.9% — both well within
+each other's clustered confidence intervals. As in Phase A, the clustered CI
+comes out noticeably wider than the naive one (roughly 1.8-1.9x), reinforcing
+that naive intervals understate uncertainty here too. Caveat: with only 3
+models, the model-clustering dimension has just 3 resampling units, so that
+component of the interval is low-resolution — the question-level clustering
+(60 units) is doing the real work. Data in
+`eval_awareness/data/eval_awareness_results.csv`.
+
+**[`probe_uncertainty/`](probe_uncertainty/)** — notebook drafted, not yet
+run, and the one I'm most excited about. Interpretability papers train a
+probe on model activations (a refusal direction, an "is this being
+evaluated" feature, a deception detector) and report one accuracy number
+with no correction for the fact that prompts cluster by template and models
+cluster by checkpoint — probably the least statistically rigorous corner of
+eval reporting right now. [`probe_uncertainty_colab.ipynb`](probe_uncertainty/probe_uncertainty_colab.ipynb)
+reuses the exact eval-aware/deployment framing from `eval_awareness/`, but
+extracts internal activations instead of reading the final answer, trains a
+linear probe to detect the framing, and feeds probe accuracy into the same
+clustered-bootstrap machinery — runs on Colab's free T4 GPU, not local
+hardware. See [`probe_uncertainty/README.md`](probe_uncertainty/README.md)
+for the full plan.
 
 ## Where the method comes from
 
