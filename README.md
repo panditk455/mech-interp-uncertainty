@@ -71,16 +71,21 @@ component of the interval is low-resolution — the question-level clustering
 (60 units) is doing the real work. Data in
 `eval_awareness/data/eval_awareness_results.csv`.
 
-**[`probe_uncertainty/`](probe_uncertainty/)** — notebook drafted, not yet
-run, and the one I'm most excited about. Interpretability papers train a
-probe on model activations (a refusal direction, an "is this being
+**[`probe_uncertainty/`](probe_uncertainty/)** — one Colab run in, revised,
+not yet re-run, and the one I'm most excited about. Interpretability papers
+train a probe on model activations (a refusal direction, an "is this being
 evaluated" feature, a deception detector) and report one accuracy number
 with no correction for the fact that prompts cluster by template and models
 cluster by checkpoint — probably the least statistically rigorous corner of
-eval reporting right now. [`probe_uncertainty_colab.ipynb`](probe_uncertainty/probe_uncertainty_colab.ipynb)
-reuses the exact eval-aware/deployment framing from `eval_awareness/`, but
-extracts internal activations instead of reading the final answer, trains a
-linear probe to detect the framing, and feeds probe accuracy into the same
+eval reporting right now. The first run of
+[`probe_uncertainty_colab.ipynb`](probe_uncertainty/probe_uncertainty_colab.ipynb)
+demonstrated exactly that risk: with only one fixed system-prompt string per
+framing, the probe hit 100% accuracy on every row — trivial surface-string
+detection, not a real result. Revised to use 4 phrasings per framing and
+leave-one-template-out CV, so accuracy now reflects whether the probe
+generalizes to unseen wording. It extracts internal activations instead of
+reading the final answer, trains a linear probe to detect the framing, and
+feeds probe accuracy into the same
 clustered-bootstrap machinery — runs on Colab's free T4 GPU, not local
 hardware. See [`probe_uncertainty/README.md`](probe_uncertainty/README.md)
 for the full plan.
