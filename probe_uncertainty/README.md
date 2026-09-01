@@ -44,5 +44,25 @@ template diversity and leave-one-template-out CV (above); the CV logic was
 sanity-checked against synthetic data with a known template confound before
 re-running on GPU.
 
-Status: revised notebook written, CV logic verified on synthetic data, not
-yet re-run on Colab.
+**Result (3 models x 40 questions x 4 templates x 2 conditions, 960 rows,
+leave-one-template-out CV):** 99.48% probe accuracy — the probe correctly
+classifies eval-aware vs. deployment framing even for a phrasing it never
+saw during training, not just memorized strings. Per model: Qwen2.5-1.5B
+100%, Phi-3.5-mini 99.7%, Qwen2.5-3B 98.75%. All 5 errors (out of 960)
+concentrate on one specific held-out phrasing ("Notice: you are currently
+participating in a benchmark assessment...") — Qwen2.5-3B misreads the
+matching *deployment*-framed variant of that template as eval-aware in all
+4 of its errors, a specific, reproducible near-miss rather than noise.
+Naive CI [98.96%, 99.90%] (width 0.94pts) vs. combined CI [98.65%, 100.31%]
+(width 1.67pts) — ~1.8x wider, consistent with Phase A and B. The combined
+upper bound spilling past 100% is a known artifact of the Cameron-Gelbach-
+Miller additive combination near a boundary with low variance, not a data
+error. Caveat: the 4 phrasings per condition, while independently worded,
+still share theme-consistent vocabulary within a class ("evaluate/test/
+benchmark/scored" vs. "helpful/user/chatting/assistant") — this is a real
+step up from literal-string memorization, but not proof of generalization
+to a phrasing sharing no vocabulary at all. Data in
+`probe_uncertainty/data/probe_results.csv`, summary in
+`probe_uncertainty/data/probe_bootstrap_result.txt`.
+
+Status: done, with a real result, matching Phase A and B's format.

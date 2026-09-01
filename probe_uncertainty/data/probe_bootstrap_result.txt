@@ -1,0 +1,24 @@
+probe_uncertainty: leave-one-template-out probe accuracy, clustered bootstrap
+n=960 rows (3 models x 40 questions x 4 templates x 2 conditions)
+
+per-model accuracy:
+model
+Qwen/Qwen2.5-1.5B-Instruct         1.000000
+Qwen/Qwen2.5-3B-Instruct           0.987500
+microsoft/Phi-3.5-mini-instruct    0.996875
+
+per-held-out-template accuracy:
+template
+0    1.000000
+1    1.000000
+2    0.983333
+3    0.995833
+
+  row        rate       0.9948  [0.9896, 0.9990]  width=0.0094
+  cluster1   rate       0.9948  [0.9875, 1.0000]  width=0.0125
+  cluster2   rate       0.9948  [0.9906, 0.9990]  width=0.0083
+  combined   rate       0.9948  [0.9865, 1.0031]  width=0.0167
+
+Note: combined CI upper bound can exceed 1.0 -- known artifact of the
+Cameron-Gelbach-Miller additive combination (c1 + c2 - row) when a rate
+sits near its boundary with low variance, not a data error.
