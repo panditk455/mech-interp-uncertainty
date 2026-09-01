@@ -65,4 +65,22 @@ to a phrasing sharing no vocabulary at all. Data in
 `probe_uncertainty/data/probe_results.csv`, summary in
 `probe_uncertainty/data/probe_bootstrap_result.txt`.
 
-Status: done, with a real result, matching Phase A and B's format.
+**Follow-up check — is 99.48% actually a length confound?** The eval-aware
+phrasings run consistently longer than the deployment ones (8-19 tokens,
+every template, both tokenizers checked), and the probe reads a
+last-token activation, so sequence length was a plausible alternative
+explanation. [`length_confound_check.py`](length_confound_check.py) tests a
+length-only linear control under the identical leave-one-template-out CV:
+**52.8% (Qwen2.5-1.5B) and 52.5% (Phi-3.5-mini)** — indistinguishable from
+the 50% chance floor. Per-question variation (2-13 answer choices) swamps
+the small, consistent length gap, ruling out length as the driver of the
+real probe's accuracy. Runs on CPU, no GPU needed:
+
+```bash
+python -m probe_uncertainty.length_confound_check
+```
+
+Result in `probe_uncertainty/data/length_confound_result.txt`.
+
+Status: done, with a real result and a ruled-out confound, matching Phase A
+and B's format.

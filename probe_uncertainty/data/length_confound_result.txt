@@ -1,0 +1,20 @@
+length_confound_check.py: does prompt length alone explain the 99.48% probe accuracy?
+
+Qwen/Qwen2.5-1.5B-Instruct  template 0: eval_aware=143.3  deployment=125.3  gap=18.0
+Qwen/Qwen2.5-1.5B-Instruct  template 1: eval_aware=140.3  deployment=129.3  gap=11.0
+Qwen/Qwen2.5-1.5B-Instruct  template 2: eval_aware=138.3  deployment=126.3  gap=12.0
+Qwen/Qwen2.5-1.5B-Instruct  template 3: eval_aware=134.3  deployment=126.3  gap=8.0
+Qwen/Qwen2.5-1.5B-Instruct: length-only leave-one-template-out accuracy = 0.5281  (n=320)
+
+microsoft/Phi-3.5-mini-instruct  template 0: eval_aware=156.7  deployment=137.7  gap=19.0
+microsoft/Phi-3.5-mini-instruct  template 1: eval_aware=155.7  deployment=142.7  gap=13.0
+microsoft/Phi-3.5-mini-instruct  template 2: eval_aware=153.7  deployment=138.7  gap=15.0
+microsoft/Phi-3.5-mini-instruct  template 3: eval_aware=148.7  deployment=138.7  gap=10.0
+microsoft/Phi-3.5-mini-instruct: length-only leave-one-template-out accuracy = 0.5250  (n=320)
+
+Conclusion: eval-aware prompts are consistently 8-19 tokens longer than
+deployment ones (both tokenizers checked), but length alone predicts the
+condition at ~52-53% under leave-one-template-out CV -- indistinguishable
+from the 50% chance floor. Per-question variation (2-13 answer choices)
+swamps the between-condition length gap. This rules out sequence length as
+an explanation for the real probe's 99.48% accuracy.

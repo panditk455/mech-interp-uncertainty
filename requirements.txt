@@ -5,3 +5,5 @@ pyarrow
 datasets
 groq
 python-dotenv
+scikit-learn
+transformers
